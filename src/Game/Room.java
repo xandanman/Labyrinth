@@ -1,6 +1,10 @@
 package Game;
 
 import Enums.Difficulty;
+import Enums.EntityType;
+
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
 
 public class Room {
     public final int HEIGHT = 20;
@@ -43,21 +47,61 @@ public class Room {
         }
     }
 
-    public void isFinished(){
-        //TODO: implementeren
+    public boolean isFinished(){
+        Entity door = null;
+        for (int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                if (entities[i][j] != null && entities[i][j].getType().equals(EntityType.DOOR)) {
+                    door = entities[i][j];
+                    break;
+                }
+            }
+        }
+        return door != null && player.getX() == door.getX() && player.getY() == door.getY();
     }
 
-    public void isFree(){
-        //TODO: check if place is free
+    public boolean isFree(int x , int y){
+        ArrayList<Entity> walls = new ArrayList<>();
+        for (int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                if (entities[i][j] != null && entities[i][j].getType().equals(EntityType.WAlL)) {
+                    walls.add(entities[i][j]);
+                }
+            }
+        }
+        for (Entity wall : walls) {
+            if (wall.getX() == x && wall.getY() == y) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void teleport(Entity[][] entities){
         //TODO: if player is on portal, teleport to another portal
     }
 
-    public void update(){
+    public void update(int newX, int newY){
         //TODO: update room and move player chack if player can move and if so move player
         //TODO: check if player is on portal and teleport
+
+        int oldX = player.getX();
+        int oldY = player.getY();
+
+        player.move(newX, newY);
+
+        if (isFree(newX, newY)){
+            if (entities[oldX][oldY] != null && entities[oldX][oldY].getType().equals(EntityType.PORTAL)){
+                floorPlan[oldX][oldY] = entities[oldX][oldY].toString().charAt(0);
+                teleport(entities);
+            }else {
+                floorPlan[oldX][oldY] = ' ';
+            }
+            floorPlan[newX][newY] = player.toString().charAt(0);
+        }
+
+
+
     }
 
     public Player getPlayer() {
