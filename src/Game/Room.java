@@ -23,6 +23,10 @@ public class Room {
         this.player = new Player(player.getName(), player.getX(), player.getY());
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
     private void createFloorPlan() {
         for (int i = 0; i < HEIGHT; i++) {
             for (int j = 0; j < WIDTH; j++) {
@@ -77,8 +81,26 @@ public class Room {
         return true;
     }
 
-    public void teleport(Entity[][] entities){
+    public void teleport(){
         //TODO: if player is on portal, teleport to another portal
+
+        ArrayList<Entity> portals = new ArrayList<>();
+        for (int i = 0; i < HEIGHT; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                if (entities[i][j] != null && entities[i][j].getType().equals(EntityType.PORTAL)) {
+                    portals.add(entities[i][j]);
+                }
+            }
+        }
+        for (Entity portal : portals) {
+            if (player.getX() == portal.getX() && player.getY() == portal.getY()) {
+                for (Entity portal1 : portals) {
+                    if (portal1 != portal) {
+                        player.move(portal1.getX(), portal1.getY());
+                    }
+                }
+            }
+        }
     }
 
     public void update(int newX, int newY){
@@ -93,18 +115,16 @@ public class Room {
         if (isFree(newX, newY)){
             if (entities[oldX][oldY] != null && entities[oldX][oldY].getType().equals(EntityType.PORTAL)){
                 floorPlan[oldX][oldY] = entities[oldX][oldY].toString().charAt(0);
-                teleport(entities);
+                
+            }else if (entities[newX][newY] != null && entities[newX][newY].getType().equals(EntityType.PORTAL)){
+                teleport();
+                
             }else {
                 floorPlan[oldX][oldY] = ' ';
             }
             floorPlan[newX][newY] = player.toString().charAt(0);
         }
 
-
-
     }
-
-    public Player getPlayer() {
-        return player;
-    }
+  
 }
