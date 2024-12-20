@@ -23,9 +23,29 @@ public class Player {
         return y;
     }
 
-    public void move(int x, int y) {
+    public void setX(int x) {
         this.x = x;
+    }
+
+    public void setY(int y) {
         this.y = y;
+    }
+
+    public void move(int direction) {
+        switch (direction) {
+            case 1:
+                x++;
+                break;
+            case 2:
+                x--;
+                break;
+            case 3:
+                y++;
+                break;
+            case 4:
+                y--;
+                break;
+        }
     }
 
     @Override

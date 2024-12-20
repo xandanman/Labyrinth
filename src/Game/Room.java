@@ -5,6 +5,7 @@ import Enums.EntityType;
 
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Room {
     public final int HEIGHT = 20;
@@ -94,23 +95,30 @@ public class Room {
         }
         for (Entity portal : portals) {
             if (player.getX() == portal.getX() && player.getY() == portal.getY()) {
-                for (Entity portal1 : portals) {
-                    if (portal1 != portal) {
-                        player.move(portal1.getX(), portal1.getY());
-                    }
+                ArrayList<Entity> otherPortals = new ArrayList<>(portals);
+                otherPortals.remove(portal);
+                if (!otherPortals.isEmpty()) {
+                    Random random = new Random();
+                    Entity portal1 = otherPortals.get(random.nextInt(otherPortals.size()));
+                    player.setX(portal1.getX());
+                    player.setY(portal1.getY());
                 }
+                return;
             }
         }
     }
 
-    public void update(int newX, int newY){
+    public void update(int direction){
         //TODO: update room and move player chack if player can move and if so move player
         //TODO: check if player is on portal and teleport
 
         int oldX = player.getX();
         int oldY = player.getY();
 
-        player.move(newX, newY);
+        player.move(direction);
+
+        int newX = player.getX();
+        int newY = player.getY();
 
         if (isFree(newX, newY)){
             if (entities[oldX][oldY] != null && entities[oldX][oldY].getType().equals(EntityType.PORTAL)){
